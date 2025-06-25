@@ -45,10 +45,5 @@ Thumbs.db
 *.key
 secrets.json
 
-# Generated research reports
-research_report_*.md
-
 # Evaluation files
 run_evaluation.py
-tests/evaluation_*.json
-tests/reports/ 
