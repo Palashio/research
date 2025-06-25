@@ -2,16 +2,6 @@
 
 An automated research pipeline built with LangGraph that breaks down complex research questions into topics, generates subquestions, searches for sources, and synthesizes comprehensive reports with recursive expansion.
 
-## 🚀 Features
-
-- **Topic Extraction**: Breaks down research questions into 3-6 major topics
-- **Subquestion Generation**: Creates specific subquestions with configurable detail levels
-- **Multi-Provider Search**: Uses Exa or Tavily API for source discovery
-- **Recursive Research Expansion**: Automatically generates follow-up questions and finds additional sources
-- **Intelligent Synthesis**: Creates cohesive topic sections with proper citations
-- **Parallel Processing**: Concurrent search operations for faster research
-- **Professional Reports**: Generates markdown reports with introduction, conclusion, and sources
-
 ## 📋 Requirements
 
 - Python 3.8+
