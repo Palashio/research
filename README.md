@@ -61,8 +61,8 @@ python main.py --query "AI in healthcare" \
 | `--depth` | Research depth (1-10) | 1 |
 | `--max-expansions` | Recursive expansion rounds | 3 |
 | `--max-workers` | Parallel workers | 4 |
-| `--search-provider` | Search provider: exa/tavily | exa |
-| `--topic-model` | Model for topic generation | gpt-4o |
+| `--search-provider` | Search provider: exa/tavily | exa | (must work with structured outputs)
+| `--topic-model` | Model for topic generation | gpt-4o | (must work with structured outputs)
 | `--summary-model` | Model for synthesis | gpt-4o |
 | `--legend` | Add table of contents | False |
 
