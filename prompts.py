@@ -18,8 +18,6 @@ These should be topics that can be answered by web search results and articles. 
 """
 
 # Subquestion Generation Prompts
-SUBQUESTION_SYSTEM = "You are a strategic research planner. Given a topic, generate 2–3 precise subquestions for deep investigation."
-
 SUBQUESTION_PROMPT = """
 Given the topic "{topic}", write {subq_range} insightful and specific subquestions related to this broader research question:
 "{user_query}"

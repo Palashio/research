@@ -35,6 +35,30 @@ def generate_report(state: Dict[str, Any]) -> Dict[str, Any]:
     legend_enabled = state.get("legend", True)
     print("\n📝 Generating research report...")
     
+    # Generate a proper title based on the user query
+    title_prompt = f"""
+Create a concise, professional research report title based on this query: "{state['user_query']}"
+
+The title should be:
+- Clear and descriptive
+- Professional in tone
+- Under 100 characters
+- Suitable for academic or business contexts
+
+Return only the title, no quotes or formatting:
+"""
+    
+    try:
+        title_response = client.responses.create(
+            model=model,
+            input=title_prompt
+        )
+        # Access the content from the responses.create API structure
+        report_title = title_response.output_text
+    except Exception as e:
+        print(f"Warning: Could not generate title, using default: {e}")
+        report_title = "Research Report"
+    
     # Use expanded sections for the report (new architecture)
     topic_content = ""
     if "expanded_sections" in state:
@@ -53,20 +77,22 @@ def generate_report(state: Dict[str, Any]) -> Dict[str, Any]:
         user_query=state['user_query'], 
         topic_content=topic_content
     )
-    intro = client.chat.completions.create(
+    intro_response = client.responses.create(
         model=model,
-        messages=[{"role": "user", "content": intro_prompt}]
-    ).choices[0].message.content.strip()
+        input=intro_prompt
+    )
+    intro = intro_response.output_text
 
     # Conclusion generation using topic sections
     conclusion_prompt = CONCLUSION_PROMPT.format(
         user_query=state['user_query'], 
         topic_content=topic_content
     )
-    conclusion = client.chat.completions.create(
+    conclusion_response = client.responses.create(
         model=model,
-        messages=[{"role": "user", "content": conclusion_prompt}]
-    ).choices[0].message.content.strip()
+        input=conclusion_prompt
+    )
+    conclusion = conclusion_response.output_text
 
     # Body formatting using expanded sections
     body = ""
@@ -129,8 +155,8 @@ def generate_report(state: Dict[str, Any]) -> Dict[str, Any]:
             source = all_sources[source_id]
             sources_section += f"[{source['id']}] {source['title']} - {source['url']}\n\n"
 
-    # Final report assembly
-    report = f"# Research Report\n\n{legend_section}## Introduction\n\n{intro}\n\n{body}\n\n## Conclusion\n\n{conclusion}{sources_section}"
+    # Final report assembly with dynamic title
+    report = f"# {report_title}\n\n{legend_section}## Introduction\n\n{intro}\n\n{body}\n\n## Conclusion\n\n{conclusion}{sources_section}"
     
     # Save report to markdown file
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -144,6 +170,7 @@ def generate_report(state: Dict[str, Any]) -> Dict[str, Any]:
     # Update state
     state["report"] = report
     state["report_filename"] = filename
+    state["report_title"] = report_title
     state["messages"].append({
         "role": "assistant",
         "content": f"[Report Generation] Complete report saved to {filename}"

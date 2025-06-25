@@ -2,13 +2,12 @@ from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from langgraph.graph import StateGraph
-from langchain_exa import ExaSearchResults
 import argparse
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from prompts import (
     TOPIC_EXTRACTION_SYSTEM, TOPIC_EXTRACTION_PROMPT,
-    SUBQUESTION_SYSTEM, SUBQUESTION_PROMPT
+    SUBQUESTION_PROMPT
 )
 from report_generator import generate_report
 from search_provider import SearchProvider
@@ -192,10 +191,6 @@ def subquestion_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
             model=model,
             input=[
                 {
-                    "role": "system",
-                    "content": SUBQUESTION_SYSTEM
-                },
-                {
                     "role": "user",
                     "content": SUBQUESTION_PROMPT.format(
                         topic=topic, 
@@ -210,12 +205,14 @@ def subquestion_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
         subqs = response.output_parsed.subquestions
         subq_map[topic] = subqs
         all_subqs.extend(subqs)
+
     state["subq_map"] = subq_map
     state["subquestions"] = all_subqs
     state["messages"].append({
         "role": "assistant",
         "content": f"Generated subquestions: {subq_map}"
     })
+    
     return state
 
 def follow_up_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -498,21 +495,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Automated Research Pipeline using LangGraph and Exa Search",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python main.py --query "What are the latest developments in renewable energy?"
-  python main.py --query "How has AI impacted healthcare?" --topic-model gpt-4o-mini
-  python main.py --query "Economic implications of climate change" --summary-model gpt-4o
-  python main.py --query "Latest tech trends" --legend
-  python main.py --query "Space exploration advances" --detail high --legend
-  python main.py --query "Climate change impacts" --search-provider tavily --detail medium
-  python main.py --query "Deep dive into quantum computing" --breadth 3 --detail high
-  python main.py --query "Comprehensive AI research" --breadth 5 --search-provider exa --legend
-  python main.py --query "Renewable energy breakthroughs" --max-expansions 5 --legend
-  python main.py --query "Future of electric vehicles" --max-expansions 4 --detail high --legend
-  python main.py --query "Quantum computing advances" --max-workers 8 --max-expansions 3 --legend
-  python main.py --query "AI in healthcare" --max-workers 6 --breadth 3 --max-expansions 4 --legend
-        """
     )
     
     parser.add_argument(
@@ -585,6 +567,7 @@ Examples:
     
     # Create initial state with user query and models
     initial_state = create_initial_state(args.query)
+
     initial_state["topic_model"] = args.topic_model
     initial_state["summary_model"] = args.summary_model
     initial_state["detail"] = args.detail
