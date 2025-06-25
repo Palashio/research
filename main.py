@@ -46,9 +46,9 @@ def search_node(state):
     search_provider = SearchProvider(search_provider_name)
     search_results = {}
     current_iteration = state.get("current_iteration", 1)
-    max_depth = state.get("depth", 1)
+    max_breadth = state.get("breadth", 1)
 
-    print(f"\n🔍 Searching with {search_provider_name.upper()} (Iteration {current_iteration}/{max_depth})...")
+    print(f"\n🔍 Searching with {search_provider_name.upper()} (Iteration {current_iteration}/{max_breadth})...")
 
     # Get questions for this iteration
     questions = state.get("current_questions", state["subquestions"])
@@ -77,7 +77,7 @@ def search_node(state):
     state["current_iteration"] = current_iteration
     state["messages"].append({
         "role": "assistant",
-        "content": f"Stored raw {search_provider_name.upper()} results for iteration {current_iteration}/{max_depth}"
+        "content": f"Stored raw {search_provider_name.upper()} results for iteration {current_iteration}/{max_breadth}"
     })
 
     return state
@@ -174,10 +174,10 @@ def follow_up_generator_node(state):
     """Generate follow-up questions based on search results"""
     model = state.get("topic_model", "gpt-4o")
     current_iteration = state.get("current_iteration", 1)
-    max_depth = state.get("depth", 1)
+    max_breadth = state.get("breadth", 1)
     main_query = state["user_query"]
     
-    print(f"\n🤔 Generating follow-up questions (Iteration {current_iteration}/{max_depth})...")
+    print(f"\n🤔 Generating follow-up questions (Iteration {current_iteration}/{max_breadth})...")
     
     # If this is the first iteration, use original subquestions
     if current_iteration == 1:
@@ -266,12 +266,12 @@ Return only the follow-up questions, one per line, with no numbering or bullets:
 def iteration_controller_node(state):
     """Control the research iteration flow"""
     current_iteration = state.get("current_iteration", 1)
-    max_depth = state.get("depth", 1)
+    max_breadth = state.get("breadth", 1)
     
-    print(f"\n🔄 Research Iteration {current_iteration}/{max_depth}")
+    print(f"\n🔄 Research Iteration {current_iteration}/{max_breadth}")
     
     # Check if we should continue to next iteration
-    if current_iteration < max_depth:
+    if current_iteration < max_breadth:
         # Prepare for next iteration
         state["current_iteration"] = current_iteration + 1
         state["next_node"] = "follow_up_generator"
@@ -279,7 +279,7 @@ def iteration_controller_node(state):
     else:
         # Research complete, move to synthesis
         state["next_node"] = "article_synthesis_with_expansion"
-        print(f"Research complete after {max_depth} iterations")
+        print(f"Research complete after {max_breadth} iterations")
     
     return state
 
@@ -413,12 +413,12 @@ Examples:
   python main.py --query "Latest tech trends" --legend
   python main.py --query "Space exploration advances" --detail high --legend
   python main.py --query "Climate change impacts" --search-provider tavily --detail medium
-  python main.py --query "Deep dive into quantum computing" --depth 3 --detail high
-  python main.py --query "Comprehensive AI research" --depth 5 --search-provider exa --legend
+  python main.py --query "Deep dive into quantum computing" --breadth 3 --detail high
+  python main.py --query "Comprehensive AI research" --breadth 5 --search-provider exa --legend
   python main.py --query "Renewable energy breakthroughs" --max-expansions 5 --legend
   python main.py --query "Future of electric vehicles" --max-expansions 4 --detail high --legend
   python main.py --query "Quantum computing advances" --max-workers 8 --max-expansions 3 --legend
-  python main.py --query "AI in healthcare" --max-workers 6 --depth 3 --max-expansions 4 --legend
+  python main.py --query "AI in healthcare" --max-workers 6 --breadth 3 --max-expansions 4 --legend
         """
     )
     
@@ -448,10 +448,10 @@ Examples:
     )
     
     parser.add_argument(
-        "--depth", 
+        "--breadth", 
         type=int,
         default=1,
-        help="Research depth: number of follow-up iterations (1-10, default: 1)"
+        help="Research breadth: number of follow-up iterations (1-10, default: 1)"
     )
     
     parser.add_argument(
@@ -495,7 +495,7 @@ Examples:
     initial_state["topic_model"] = args.topic_model
     initial_state["summary_model"] = args.summary_model
     initial_state["detail"] = args.detail
-    initial_state["depth"] = args.depth
+    initial_state["breadth"] = args.breadth
     initial_state["max_expansions"] = args.max_expansions
     initial_state["max_workers"] = args.max_workers
     initial_state["search_provider"] = args.search_provider
