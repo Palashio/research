@@ -1,8 +1,33 @@
+"""
+Report Generator Module
+
+This module handles the generation of comprehensive research reports from
+synthesized content, including introduction, conclusion, and source citations.
+"""
+
 from openai import OpenAI
 import datetime
+from typing import Dict, Any
 from prompts import INTRODUCTION_PROMPT, CONCLUSION_PROMPT
 
-def generate_report(state):
+
+def generate_report(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate a comprehensive research report from synthesized content.
+    
+    This function creates a complete research report including introduction,
+    topic sections, conclusion, and properly formatted source citations.
+    The report is saved as a markdown file with timestamp.
+    
+    Args:
+        state: Pipeline state containing synthesized content, topics, and metadata
+        
+    Returns:
+        Updated state with report content and filename
+        
+    Raises:
+        Exception: If report generation fails due to missing content or API errors
+    """
     # Initialize OpenAI client
     client = OpenAI()
     

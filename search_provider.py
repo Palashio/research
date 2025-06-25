@@ -1,9 +1,34 @@
+"""
+Search Provider Module
+
+This module provides a unified interface for different search providers (Exa, Tavily)
+to abstract away the differences in their APIs and provide consistent search results.
+"""
+
 import os
+from typing import List, Dict, Any, Optional
 from langchain_exa import ExaSearchResults
 from langchain_tavily import TavilySearch
 
+
 class SearchProvider:
-    def __init__(self, provider="exa"):
+    """
+    A unified search provider that abstracts different search APIs.
+    
+    This class provides a consistent interface for searching across different
+    providers like Exa and Tavily, handling their specific APIs and result formats.
+    """
+    
+    def __init__(self, provider: str = "exa"):
+        """
+        Initialize the search provider.
+        
+        Args:
+            provider: The search provider to use ("exa" or "tavily")
+            
+        Raises:
+            ValueError: If the provider is not supported or API key is missing
+        """
         self.provider = provider
         if provider == "exa":
             if not os.environ.get("EXA_API_KEY"):
@@ -19,10 +44,19 @@ class SearchProvider:
         else:
             raise ValueError(f"Unsupported search provider: {provider}")
     
-    def search(self, query, num_results=2):
+    def search(self, query: str, num_results: int = 2) -> Any:
         """
-        Perform a search using the configured provider
-        Returns results in a consistent format
+        Perform a search using the configured provider.
+        
+        Args:
+            query: The search query string
+            num_results: Number of results to return (default: 2)
+            
+        Returns:
+            Search results in a consistent format, or None if search fails
+            
+        Raises:
+            Exception: If the search fails or provider is not configured
         """
         try:
             if self.provider == "exa":
@@ -41,24 +75,38 @@ class SearchProvider:
             print(f"Search error on '{query}' with {self.provider}: {e}")
             return None
     
-    def _convert_tavily_results(self, tavily_results):
+    def _convert_tavily_results(self, tavily_results: Dict[str, Any]) -> Any:
         """
-        Convert Tavily results to match Exa format for consistency
+        Convert Tavily results to match Exa format for consistency.
+        
+        Args:
+            tavily_results: Raw results from Tavily search API
+            
+        Returns:
+            Wrapper object with results in Exa-compatible format
         """
         class TavilyResultWrapper:
-            def __init__(self, tavily_results):
+            """Wrapper class to provide Exa-compatible result format for Tavily results."""
+            def __init__(self, tavily_results: Dict[str, Any]):
                 self.results = []
                 if tavily_results and 'results' in tavily_results:
                     for result in tavily_results['results']:
                         self.results.append(TavilyResultItem(result))
         
         class TavilyResultItem:
-            def __init__(self, result):
+            """Individual result item wrapper for Tavily results."""
+            def __init__(self, result: Dict[str, Any]):
                 self.url = result.get('url', '')
                 self.title = result.get('title', '')
                 self.text = result.get('content', '')
         
         return TavilyResultWrapper(tavily_results)
     
-    def get_provider_name(self):
+    def get_provider_name(self) -> str:
+        """
+        Get the name of the current search provider.
+        
+        Returns:
+            Name of the configured search provider
+        """
         return self.provider 

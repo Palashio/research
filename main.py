@@ -1,6 +1,6 @@
 from openai import OpenAI
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Any, Optional
 from langgraph.graph import StateGraph
 from langchain_exa import ExaSearchResults
 import argparse
@@ -16,18 +16,31 @@ from research_agent import ResearchAgent
 
 load_dotenv()
 
-# Initializations
+# Initialize OpenAI client
 client = OpenAI()
 
 
 class ResearchTopics(BaseModel):
+    """Pydantic model for structured topic extraction."""
     topics: List[str]
 
+
 class Subquestions(BaseModel):
+    """Pydantic model for structured subquestion generation."""
     subquestions: List[str]
 
-def create_initial_state(user_query):
-    """Create initial state with user query"""
+
+def create_initial_state(user_query: str) -> Dict[str, Any]:
+    """
+    Create initial state with user query and default values.
+    
+    Args:
+        user_query: The research question to investigate
+        
+    Returns:
+        Dictionary containing the initial state with user query, empty topics,
+        subquestions, and initial message history
+    """
     return {
         "user_query": user_query,
         "topics": [],
@@ -41,7 +54,19 @@ def create_initial_state(user_query):
         ]
     }
 
-def search_node(state):
+def search_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Search for information using the specified search provider.
+    
+    This node performs web searches for each question in the current iteration,
+    storing results in the state for later processing.
+    
+    Args:
+        state: Current pipeline state containing questions and configuration
+        
+    Returns:
+        Updated state with search results for each question
+    """
     search_provider_name = state.get("search_provider", "exa")
     search_provider = SearchProvider(search_provider_name)
     search_results = {}
@@ -83,7 +108,19 @@ def search_node(state):
     return state
 
 
-def topic_extractor_node(state):
+def topic_extractor_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extract main topics from the user query.
+    
+    This node uses AI to break down the research question into 2-4 main topics
+    that can be investigated independently.
+    
+    Args:
+        state: Current pipeline state containing the user query
+        
+    Returns:
+        Updated state with extracted topics
+    """
     user_query = state["user_query"]
     model = state.get("topic_model", "gpt-4o")
     detail = state.get("detail", "medium")
@@ -122,7 +159,19 @@ def topic_extractor_node(state):
     })
     return state
 
-def subquestion_generator_node(state):
+def subquestion_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate specific subquestions for each topic.
+    
+    This node creates detailed, researchable questions for each extracted topic,
+    mapping them back to the original user query.
+    
+    Args:
+        state: Current pipeline state containing topics
+        
+    Returns:
+        Updated state with subquestions and topic mapping
+    """
     model = state.get("topic_model", "gpt-4o")
     detail = state.get("detail", "medium")
     subq_map = {}
@@ -161,7 +210,6 @@ def subquestion_generator_node(state):
         subqs = response.output_parsed.subquestions
         subq_map[topic] = subqs
         all_subqs.extend(subqs)
-    print(subq_map)
     state["subq_map"] = subq_map
     state["subquestions"] = all_subqs
     state["messages"].append({
@@ -170,8 +218,19 @@ def subquestion_generator_node(state):
     })
     return state
 
-def follow_up_generator_node(state):
-    """Generate follow-up questions based on search results"""
+def follow_up_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate follow-up questions based on search results.
+    
+    This node analyzes search results from previous iterations to generate
+    new, more specific research questions that build upon found information.
+    
+    Args:
+        state: Current pipeline state containing search results
+        
+    Returns:
+        Updated state with follow-up questions for next iteration
+    """
     model = state.get("topic_model", "gpt-4o")
     current_iteration = state.get("current_iteration", 1)
     max_breadth = state.get("breadth", 1)
@@ -258,8 +317,19 @@ Return only the follow-up questions, one per line, with no numbering or bullets:
     
     return state
 
-def iteration_controller_node(state):
-    """Control the research iteration flow"""
+def iteration_controller_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Control the research iteration flow.
+    
+    This node determines whether to continue with more iterations or move
+    to the synthesis phase based on the configured breadth parameter.
+    
+    Args:
+        state: Current pipeline state with iteration information
+        
+    Returns:
+        Updated state with next node routing information
+    """
     current_iteration = state.get("current_iteration", 1)
     max_breadth = state.get("breadth", 1)
     
@@ -278,12 +348,32 @@ def iteration_controller_node(state):
     
     return state
 
-def route_after_iteration(state):
-    """Route to the next node based on iteration controller decision"""
+def route_after_iteration(state: Dict[str, Any]) -> str:
+    """
+    Route to the next node based on iteration controller decision.
+    
+    Args:
+        state: Current pipeline state with routing information
+        
+    Returns:
+        Name of the next node to execute
+    """
     return state.get("next_node", "article_synthesis_with_expansion")
 
-def article_synthesis_with_expansion_node(state):
-    """Synthesize articles with intelligent integration and recursive research expansion"""
+def article_synthesis_with_expansion_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Synthesize articles with intelligent integration and recursive research expansion.
+    
+    This node uses the ResearchAgent to intelligently combine all search results
+    into cohesive topic sections, then performs additional recursive expansion
+    to deepen understanding of each topic.
+    
+    Args:
+        state: Current pipeline state with all search results
+        
+    Returns:
+        Updated state with synthesized and expanded content
+    """
     model = state.get("summary_model", "gpt-4o")
     search_provider = state.get("search_provider", "exa")
     max_expansions = state.get("max_expansions", 3)
@@ -395,8 +485,16 @@ graph.set_finish_point("generate_report")
 # Compile graph
 app = graph.compile()
 
-def main():
-    """Main function to run the research pipeline"""
+def main() -> int:
+    """
+    Main function to run the research pipeline.
+    
+    This function sets up the argument parser, creates the initial state,
+    and executes the LangGraph pipeline to generate a comprehensive research report.
+    
+    Returns:
+        0 on success, 1 on error
+    """
     parser = argparse.ArgumentParser(
         description="Automated Research Pipeline using LangGraph and Exa Search",
         formatter_class=argparse.RawDescriptionHelpFormatter,
