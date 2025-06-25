@@ -230,7 +230,6 @@ Return only the follow-up questions, one per line, with no numbering or bullets:
             
             # Filter and add novel questions
             for q in generated_questions:
-                print('generated question:', q)
                 q = q.strip()
 
                 # Validate the question
@@ -248,10 +247,6 @@ Return only the follow-up questions, one per line, with no numbering or bullets:
     
     max_follow_ups = min(len(follow_up_questions), 3)  # Max 3 follow-up questions per iteration
     selected_follow_ups = follow_up_questions[:max_follow_ups]
-    
-    print(f"Generated {len(selected_follow_ups)} follow-up questions")
-    for i, q in enumerate(selected_follow_ups, 1):
-        print(f"  {i}. {q}")
     
     # Update state
     state["current_questions"] = selected_follow_ups
