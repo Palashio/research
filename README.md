@@ -11,7 +11,7 @@ An automated research pipeline built with LangGraph that breaks down complex res
 ## 🛠️ Installation
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Palashio/research.git
 cd deepresearch
 pip install -r requirements.txt
 cp .env.example .env
