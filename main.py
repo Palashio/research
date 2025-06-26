@@ -7,13 +7,13 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from prompts import (
     TOPIC_EXTRACTION_SYSTEM, TOPIC_EXTRACTION_PROMPT,
-    SUBQUESTION_SYSTEM, SUBQUESTION_PROMPT,
+    SUBQUESTION_PROMPT,
     FOLLOW_UP_GENERATION_PROMPT
 )
 from report_generator import generate_report
 from search_provider import SearchProvider
 from research_agent import ResearchAgent
-from arg_parser import parse_arguments, validate_arguments
+from arg_parser import parse_arguments
 
 load_dotenv()
 
@@ -504,7 +504,6 @@ def main() -> int:
     try:
         # Parse and validate arguments
         args = parse_arguments()
-        validate_arguments(args)
         
         # Create initial state with user query and models
         initial_state = create_initial_state(args["query"])
