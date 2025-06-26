@@ -375,4 +375,28 @@ Clean the content by removing any academic formatting and creating a natural, fl
 
 <Output>
 Return the cleaned content as a natural, flowing narrative without academic formatting, but with all in-text citations preserved. If you need you are allowed to create sub-sections, but they must be topic specific:
+"""
+
+# Follow-up Generation Prompt (for main pipeline)
+FOLLOW_UP_GENERATION_PROMPT = """
+Based on this article content, what are 2 meaningful follow-up research questions that could deepen understanding of the original topic: '{main_query}'?
+
+<Article Content>
+{article_content}
+</Article Content>
+
+<Original Question>
+{question}
+</Original Question>
+
+<Task>
+Generate 2 follow-up questions that:
+1. Build upon the information in this article
+2. Explore deeper aspects of the topic
+3. Are specific and researchable
+4. Haven't been asked before
+
+Return only the follow-up questions, one per line, with no numbering or bullets:
+</Task>
+
 """ 

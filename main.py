@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from prompts import (
     TOPIC_EXTRACTION_SYSTEM, TOPIC_EXTRACTION_PROMPT,
-    SUBQUESTION_SYSTEM, SUBQUESTION_PROMPT
+    SUBQUESTION_SYSTEM, SUBQUESTION_PROMPT,
+    FOLLOW_UP_GENERATION_PROMPT
 )
 from report_generator import generate_report
 from search_provider import SearchProvider
@@ -259,22 +260,11 @@ def follow_up_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
             continue
         
         # Generate follow-up questions
-        follow_up_prompt = f"""
-Based on this article content, what are 2 meaningful follow-up research questions that could deepen understanding of the original topic: '{main_query}'?
-
-Article Content:
-{article_content}
-
-Original Question: {question}
-
-Generate 2 follow-up questions that:
-1. Build upon the information in this article
-2. Explore deeper aspects of the topic
-3. Are specific and researchable
-4. Haven't been asked before
-
-Return only the follow-up questions, one per line, with no numbering or bullets:
-"""
+        follow_up_prompt = FOLLOW_UP_GENERATION_PROMPT.format(
+            main_query=main_query,
+            article_content=article_content,
+            question=question
+        )
         
         try:
             response = client.chat.completions.create(
