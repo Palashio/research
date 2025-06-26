@@ -267,12 +267,12 @@ def follow_up_generator_node(state: Dict[str, Any]) -> Dict[str, Any]:
         )
         
         try:
-            response = client.chat.completions.create(
+            response = client.responses.create(
                 model=model,
-                messages=[{"role": "user", "content": follow_up_prompt}]
+                input=follow_up_prompt
             )
             
-            generated_questions = response.choices[0].message.content.strip().split('\n')
+            generated_questions = response.output_text.strip().split('\n')
             
             # Filter and add novel questions
             for q in generated_questions:

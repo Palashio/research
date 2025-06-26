@@ -122,12 +122,12 @@ class ResearchAgent:
         )
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}]
+                input=prompt
             )
             
-            questions = response.choices[0].message.content.strip().split('\n')
+            questions = response.output_text.strip().split('\n')
             # Clean up questions
             cleaned_questions = []
             for q in questions:
@@ -163,12 +163,12 @@ Source Number: {i}
         )
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}]
+                input=prompt
             )
             
-            integrated_content = response.choices[0].message.content.strip()
+            integrated_content = response.output_text.strip()
             
             # Clean any academic formatting that might have been introduced
             integrated_content = self.clean_academic_formatting(integrated_content)
@@ -295,12 +295,12 @@ Source Number: {i}
         )
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}]
+                input=prompt
             )
             
-            integrated_content = response.choices[0].message.content.strip()
+            integrated_content = response.output_text.strip()
             
             # Clean any academic formatting that might have been introduced
             integrated_content = self.clean_academic_formatting(integrated_content)
@@ -321,12 +321,12 @@ Source Number: {i}
         )
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}]
+                input=prompt
             )
             
-            questions = response.choices[0].message.content.strip().split('\n')
+            questions = response.output_text.strip().split('\n')
             # Clean up questions
             cleaned_questions = []
             for q in questions:
@@ -351,12 +351,12 @@ Source Number: {i}
         prompt = CLEAN_ACADEMIC_FORMATTING_PROMPT.format(content=content)
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}]
+                input=prompt
             )
             
-            cleaned_content = response.choices[0].message.content.strip()
+            cleaned_content = response.output_text.strip()
             return cleaned_content
             
         except Exception as e:
