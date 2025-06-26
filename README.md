@@ -116,7 +116,7 @@ graph TD
     E -->|Complete| F[Article Synthesis & Expansion]
     
     %% Research Agent Internal Flow
-    subgraph "Research Agent (Parallel Processing)"
+    subgraph "Research Agent"
         direction TB
         G[Topic Processing] --> H[Recursive Expansion]
         H --> I[Parallel Search]
