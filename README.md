@@ -40,7 +40,6 @@ python main.py --query "What are the latest developments in renewable energy?"
 # High detail research with recursive expansion
 python main.py --query "Climate change impacts" \
   --detail high \
-  --depth 3 \
   --max-expansions 4 \
   --legend
 
@@ -58,7 +57,6 @@ python main.py --query "AI in healthcare" \
 |--------|-------------|---------|
 | `--query` | Research question (required) | - |
 | `--detail` | Detail level: low/medium/high | medium |
-| `--depth` | Research depth (1-10) | 1 |
 | `--max-expansions` | Recursive expansion rounds | 3 |
 | `--max-workers` | Parallel workers | 4 |
 | `--search-provider` | Search provider: exa/tavily | exa | (must work with structured outputs)
@@ -69,39 +67,38 @@ python main.py --query "AI in healthcare" \
 
 ## 📊 Evaluation System
 
-The pipeline includes a comprehensive evaluation system to assess research report quality:
+The pipeline includes a narrative coherence evaluation system to assess research report quality:
 
 ### Evaluation Metrics
 
+The evaluator analyzes each section of the report and scores it on a 1-5 scale (converted to 0-100) across these dimensions:
+
 | Metric | Description | Score Range |
 |--------|-------------|-------------|
-| **Citation Completeness** | Tracks citation distribution, source coverage, and citation efficiency | 0-100 |
-| **Content Depth** | Measures word count, fact density, topic balance, and information richness | 0-100 |
-| **Source Quality** | Evaluates source diversity, authority domains, recency, and credibility | 0-100 |
-| **Structural Quality** | Assesses section completeness, formatting consistency, and organization | 0-100 |
-| **Narrative Coherence** | Uses LLM to evaluate logical flow, integration quality, and academic tone | 0-100 |
-| **Factual Consistency** | Identifies contradictions, inconsistencies, and conflicting claims | 0-100 |
+| **Logical Flow** | How well content flows from one paragraph to the next | 1-5 (20-100) |
+| **Integration Quality** | How well information from multiple sources is integrated | 1-5 (20-100) |
+| **Academic Tone** | How professional and scholarly the writing style is | 1-5 (20-100) |
+| **Clarity** | How clear and understandable the content is | 1-5 (20-100) |
+| **Coherence** | How well ideas connect and build upon each other | 1-5 (20-100) |
 
 ### Evaluation Features
 
-- **Citation Analysis**: Tracks citation distribution across topics, identifies missing/unused citations
-- **Content Metrics**: Word count, fact density, topic balance, and information distribution
-- **Source Assessment**: Authority domains, recency, diversity, and credibility scoring
-- **Structural Review**: Section completeness, formatting consistency, and organization quality
-- **LLM-Powered Analysis**: Narrative coherence and factual consistency evaluation
-- **Comprehensive Scoring**: Weighted overall score with detailed breakdown
+- **Section-by-Section Analysis**: Evaluates each report section separately (introduction, topics, conclusion)
+- **LLM-Powered Assessment**: Uses OpenAI models to provide detailed explanations for each score
+- **Overall Scoring**: Calculates weighted average across all sections
+- **JSON Output**: Saves detailed evaluation results with explanations
 
 ### Usage
 
 ```bash
 # Evaluate a single report
-python evaluator.py research_report_20250625_120911.md
+python tests/evaluator.py research_report_20250625_120911.md
 
 # Batch evaluation of multiple reports
-python run_eval.py
+python tests/run_eval.py
 
-# Quick evaluation with custom model
-python evaluator.py report.md --model gpt-4o --output results.json
+# Custom model and output path
+python tests/evaluator.py report.md --model gpt-4o --output results.json
 ```
 
 ## 🏗️ Architecture
