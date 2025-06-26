@@ -15,7 +15,7 @@ load_dotenv()
 
 def find_reports(directory="./reports"):
     """Find all research report markdown files"""
-    pattern = os.path.join(directory, "research_report_*.md")
+    pattern = os.path.join(directory, "*.md")
     return glob.glob(pattern)
 
 def main():

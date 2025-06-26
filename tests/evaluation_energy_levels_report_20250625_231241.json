@@ -1,0 +1,87 @@
+{
+  "report_path": "./reports/energy_levels_report.md",
+  "evaluation_date": "2025-06-25T23:12:12.485684",
+  "narrative_coherence": {
+    "section_scores": {
+      "introduction": {
+        "logical_flow": {
+          "score": 4,
+          "explanation": "The section demonstrates a strong logical progression, moving smoothly from discussing diet to exercise and lifestyle changes. It lays out what will be covered clearly, which establishes a strong foundation for the report."
+        },
+        "integration_quality": {
+          "score": 1,
+          "explanation": "Although the content mentions specific natural supplements like enXtra and Zynamite®, it does not integrate information from sources or provide citations. There's a lack of source blending or evidence of research."
+        },
+        "academic_tone": {
+          "score": 3,
+          "explanation": "The tone is generally appropriate for an academic setting but lacks some of the depth and formality expected in scholarly writing. It could benefit from a more detailed and nuanced exploration of the subjects."
+        },
+        "clarity": {
+          "score": 4,
+          "explanation": "The section is very clear and well-explained, easily understandable for most readers. It effectively presents its aims and central themes."
+        },
+        "coherence": {
+          "score": 4,
+          "explanation": "There is strong coherence within this section. The ideas are well-connected and logically build on one another, presenting a unified narrative about maintaining energy without caffeine."
+        },
+        "overall_assessment": "The section presents a clear and logical introduction to the report's topic, with strong coherence and clarity. However, it lacks integration of sources and needs a more academic tone for higher scholarly impact.",
+        "score": 64.0
+      },
+      "topic_Natural Energy-Boosting Foods and Supplements": {
+        "logical_flow": {
+          "score": 4,
+          "explanation": "The section demonstrates strong logical progression with smooth transitions between topics. It moves from dietary recommendations to specific supplements, culminating in a holistic approach to energy boosting. The flow from one paragraph to the next is coherent, although the introduction could connect a bit more directly with the core focus on natural energy boosters."
+        },
+        "integration_quality": {
+          "score": 3,
+          "explanation": "The section includes references to studies and reviews, but specific citations (e.g., [11]) lack context here, making it difficult to assess the integration quality fully. Despite this, the information is generally well blended into a unified narrative."
+        },
+        "academic_tone": {
+          "score": 4,
+          "explanation": "The tone is appropriately academic, employing professional language throughout. There is a focus on presenting information in a clear and structured manner, which aligns well with scholarly writing."
+        },
+        "clarity": {
+          "score": 4,
+          "explanation": "The content is very clear and well-explained, with technical terms and concepts like glycemic index and adaptogens defined effectively for comprehension. Minor adjustments might enhance understanding further, especially where technical supplements are discussed."
+        },
+        "coherence": {
+          "score": 4,
+          "explanation": "Ideas are well-connected with a clear progression from one concept to another. The section effectively builds from diet and exercise discussions to the implications of various supplements, maintaining thematic coherence throughout."
+        },
+        "overall_assessment": "The section excels in presenting a coherent, structured narrative on natural energy-boosting foods and supplements. It combines dietary advice with insights on supplements within a context of healthy lifestyle practices, effectively supporting the theme of energy maintenance. Slight improvements in source citation clarity and introduction alignment could enhance overall readability and integration.",
+        "score": 76.0
+      },
+      "topic_Physical Activities to Enhance Energy Levels": {
+        "logical_flow": {
+          "score": 4,
+          "explanation": "The section demonstrates a strong logical progression, transitioning well between different types of exercises and their effects on energy and mood. Each paragraph builds on the previous one, maintaining a coherent narrative throughout."
+        },
+        "integration_quality": {
+          "score": 4,
+          "explanation": "The information from various studies is well-integrated and seamlessly blended into the narrative. Citations are appropriately used to support claims, although specific source details (like names and dates) could enhance credibility further."
+        },
+        "academic_tone": {
+          "score": 4,
+          "explanation": "The section maintains a strong academic tone with professional language. The writing is appropriate for a scholarly context, though slightly more formal language could elevate it further."
+        },
+        "clarity": {
+          "score": 4,
+          "explanation": "The content is very clear and explanations are well-structured. Concepts are presented in an understandable manner, though a bit more detail in explanations could improve clarity."
+        },
+        "coherence": {
+          "score": 4,
+          "explanation": "The ideas connect well and the narrative effectively builds upon previous points. The structure supports a coherent progression of ideas, although a more explicit connection between some sections could enhance coherence."
+        },
+        "overall_assessment": "The section provides a well-organized and coherent discussion on how physical activities enhance energy levels. Strong integration of sources supports a clear narrative, and the academic tone is maintained effectively throughout. While there's minor room for improvement in enhancing clarity and formalizing the tone, the section successfully communicates its key messages clearly and logically.",
+        "score": 80.0
+      }
+    },
+    "overall_score": 73.3,
+    "sections_evaluated": [
+      "introduction",
+      "topic_Natural Energy-Boosting Foods and Supplements",
+      "topic_Physical Activities to Enhance Energy Levels"
+    ]
+  },
+  "overall_score": 73.3
+}

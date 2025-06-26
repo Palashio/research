@@ -109,7 +109,7 @@ You are an expert evaluator of research report sections. Analyze the following s
 {section_content[:6000]}  # Limit content length for API
 </Section Content>
 
-Evaluate this section on the following criteria using a 1-5 scale (where 1=poor, 2=fair, 3=good, 4=very good, 5=excellent):
+Evaluate this section on the following criteria using a 1-5 scale (where 1=poor, 2=fair, 3=good, 4=very good, 5=excellent). Be critical in your analysis.:
 
 1. **Logical Flow (1-5)**: How well does the content flow from one paragraph to the next?
    - 1: Disjointed, no clear progression
@@ -163,7 +163,7 @@ Provide a brief explanation for each score and an overall coherence assessment.
                 
                 result = response.output_parsed
                 
-                # Calculate average score for this section (convert to 0-100 scale)
+                # Calculate average score for this section (keep as 1-5 scale)
                 scores = [
                     result.logical_flow.score,
                     result.integration_quality.score,
@@ -171,7 +171,7 @@ Provide a brief explanation for each score and an overall coherence assessment.
                     result.clarity.score,
                     result.coherence.score
                 ]
-                avg_score = (sum(scores) / len(scores)) * 20  # Convert 1-5 to 0-100 scale
+                avg_score = sum(scores) / len(scores)  # Keep as 1-5 scale
                 
                 section_scores[section_name] = {
                     'logical_flow': {
@@ -208,12 +208,12 @@ Provide a brief explanation for each score and an overall coherence assessment.
                     'clarity': {'score': 3, 'explanation': 'Evaluation failed'},
                     'coherence': {'score': 3, 'explanation': 'Evaluation failed'},
                     'overall_assessment': 'Evaluation failed due to error',
-                    'score': 60.0
+                    'score': 3.0
                 }
-                overall_scores.append(60.0)
+                overall_scores.append(3.0)
         
         # Calculate overall average score
-        overall_avg_score = sum(overall_scores) / len(overall_scores) if overall_scores else 60.0
+        overall_avg_score = sum(overall_scores) / len(overall_scores) if overall_scores else 3.0
         
         return {
             'section_scores': section_scores,
