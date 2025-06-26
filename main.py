@@ -151,7 +151,6 @@ def topic_extractor_node(state: Dict[str, Any]) -> Dict[str, Any]:
         text_format=ResearchTopics,
     )
     topics = response.output_parsed.topics
-    print(topics)
     state["topics"] = topics
     state["messages"].append({
         "role": "assistant",
