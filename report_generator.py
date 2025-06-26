@@ -173,7 +173,7 @@ Return only the title, no quotes or formatting:
     state["report_title"] = report_title
     state["messages"].append({
         "role": "assistant",
-        "content": f"[Report Generation] Complete report saved to {filename}"
+        "content": f"[Report Generation] Complete report saved to {filename}\n\n{report}"
     })
     
     return state 

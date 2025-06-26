@@ -112,7 +112,7 @@ You are a research analyst writing the conclusion to a structured report.
 </Key sections by topic>
 
 <Task>
-Write a thoughtful **conclusion** that summarizes the major insights and takeaways across topics. Do not introduce new information. The conclusion should be no longer than one paragraphs long.
+Write a thoughtful **conclusion** that summarizes the major insights and takeaways across topics. Do not introduce new information. The conclusion should be no longer than one paragraph long.
 </Task>
 """
 

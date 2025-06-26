@@ -339,8 +339,6 @@ Source Number: {i}
                     if any(keyword in question_lower for keyword in topic_keywords):
                         cleaned_questions.append(q)
             
-            print(cleaned_questions)
-            
             return cleaned_questions[:3]  # Limit to 3 questions
             
         except Exception as e:

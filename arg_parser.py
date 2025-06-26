@@ -132,30 +132,3 @@ def parse_arguments() -> Dict[str, Any]:
         "legend": args.legend,
         "verbose": args.verbose
     }
-
-
-def validate_arguments(args: Dict[str, Any]) -> None:
-    """
-    Validate parsed arguments and raise errors for invalid combinations.
-    
-    Args:
-        args: Dictionary of parsed arguments
-        
-    Raises:
-        ValueError: If arguments are invalid or incompatible
-    """
-    # Validate breadth range
-    if not 1 <= args["breadth"] <= 10:
-        raise ValueError("--breadth must be between 1 and 10")
-    
-    # Validate max_expansions range
-    if not 1 <= args["max_expansions"] <= 5:
-        raise ValueError("--max-expansions must be between 1 and 5")
-    
-    # Validate max_workers range
-    if not 1 <= args["max_workers"] <= 10:
-        raise ValueError("--max-workers must be between 1 and 10")
-    
-    # Validate query length
-    if len(args["query"].strip()) < 10:
-        raise ValueError("--query must be at least 10 characters long")
