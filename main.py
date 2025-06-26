@@ -2,16 +2,17 @@ from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from langgraph.graph import StateGraph
-import argparse
+from langchain_exa import ExaSearchResults
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from prompts import (
     TOPIC_EXTRACTION_SYSTEM, TOPIC_EXTRACTION_PROMPT,
-    SUBQUESTION_PROMPT
+    SUBQUESTION_SYSTEM, SUBQUESTION_PROMPT
 )
 from report_generator import generate_report
 from search_provider import SearchProvider
 from research_agent import ResearchAgent
+from arg_parser import parse_arguments, validate_arguments
 
 load_dotenv()
 
@@ -425,7 +426,7 @@ def article_synthesis_with_expansion_node(state: Dict[str, Any]) -> Dict[str, An
             return topic, {
                 'synthesized_content': f"No articles found for {topic}.",
                 'all_sources': [],
-                'expansion_rounds': 0
+                'expansion_rounds': 0.
             }
         
         print(f"   📚 Found {len(topic_articles)} articles for {topic}")
@@ -511,92 +512,22 @@ def main() -> int:
     Returns:
         0 on success, 1 on error
     """
-    parser = argparse.ArgumentParser(
-        description="Automated Research Pipeline using LangGraph and Exa Search",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    
-    parser.add_argument(
-        "--query", 
-        required=True,
-        help="Research question to investigate"
-    )
-    
-    parser.add_argument(
-        "--topic-model", 
-        default="gpt-4o",
-        help="OpenAI model for topic generation and subquestion creation (default: gpt-4o)"
-    )
-    
-    parser.add_argument(
-        "--summary-model", 
-        default="gpt-4o",
-        help="OpenAI model for synthesis and report generation (default: gpt-4o)"
-    )
-    
-    parser.add_argument(
-        "--detail", 
-        choices=["low", "medium", "high"],
-        default="medium",
-        help="Detail level for subquestion generation: low (1-2), medium (2-3), high (4-5) (default: medium)"
-    )
-    
-    parser.add_argument(
-        "--breadth", 
-        type=int,
-        default=1,
-        help="Research breadth: number of follow-up iterations (1-10, default: 1)"
-    )
-    
-    parser.add_argument(
-        "--max-expansions", 
-        type=int,
-        default=3,
-        help="Maximum recursive expansion rounds per article (1-5, default: 3)"
-    )
-    
-    parser.add_argument(
-        "--max-workers", 
-        type=int,
-        default=4,
-        help="Number of parallel workers for article expansion (1-10, default: 4)"
-    )
-    
-    parser.add_argument(
-        "--search-provider", 
-        choices=["exa", "tavily"],
-        default="exa",
-        help="Search provider to use: exa or tavily (default: exa)"
-    )
-    
-    parser.add_argument(
-        "--legend", 
-        action="store_true",
-        help="Add a table of contents (legend) to the report"
-    )
-    
-    parser.add_argument(
-        "--verbose", 
-        "-v", 
-        action="store_true",
-        help="Enable verbose output with detailed progress information"
-    )
-    
-    args = parser.parse_args()
-    
-    # Create initial state with user query and models
-    initial_state = create_initial_state(args.query)
-
-    initial_state["topic_model"] = args.topic_model
-    initial_state["summary_model"] = args.summary_model
-    initial_state["detail"] = args.detail
-    initial_state["breadth"] = args.breadth
-    initial_state["max_expansions"] = args.max_expansions
-    initial_state["max_workers"] = args.max_workers
-    initial_state["search_provider"] = args.search_provider
-    initial_state["legend"] = args.legend
-    
     try:
+        # Parse and validate arguments
+        args = parse_arguments()
+        validate_arguments(args)
+        
+        # Create initial state with user query and models
+        initial_state = create_initial_state(args["query"])
+        initial_state["topic_model"] = args["topic_model"]
+        initial_state["summary_model"] = args["summary_model"]
+        initial_state["detail"] = args["detail"]
+        initial_state["breadth"] = args["breadth"]
+        initial_state["max_expansions"] = args["max_expansions"]
+        initial_state["max_workers"] = args["max_workers"]
+        initial_state["search_provider"] = args["search_provider"]
+        initial_state["legend"] = args["legend"]
+        
         # Run the research pipeline
         result = app.invoke(initial_state)
         
@@ -606,7 +537,7 @@ def main() -> int:
         
     except Exception as e:
         print(f"\n❌ Error during research pipeline execution: {e}")
-        if args.verbose:
+        if args.get("verbose"):
             import traceback
             traceback.print_exc()
         return 1
