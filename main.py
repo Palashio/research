@@ -401,7 +401,9 @@ def article_synthesis_with_expansion_node(state: Dict[str, Any]) -> Dict[str, An
     
     print(f"   📊 Created global source mapping with {len(global_source_mapping)} unique sources")
     
-    for topic in state["topics"]:
+    # Prepare topic processing tasks for parallel execution
+    def process_topic(topic: str) -> tuple[str, Dict[str, Any]]:
+        """Process a single topic and return (topic, synthesis_result)"""
         print(f"   🔄 Processing topic: {topic}")
         topic_subqs = state["subq_map"].get(topic, [])
         
@@ -420,8 +422,11 @@ def article_synthesis_with_expansion_node(state: Dict[str, Any]) -> Dict[str, An
                     })
         
         if not topic_articles:
-            expanded_sections[topic] = f"No articles found for {topic}."
-            continue
+            return topic, {
+                'synthesized_content': f"No articles found for {topic}.",
+                'all_sources': [],
+                'expansion_rounds': 0
+            }
         
         print(f"   📚 Found {len(topic_articles)} articles for {topic}")
         
@@ -433,19 +438,33 @@ def article_synthesis_with_expansion_node(state: Dict[str, Any]) -> Dict[str, An
             global_source_mapping=global_source_mapping
         )
         
-        # Store the synthesized content
-        expanded_sections[topic] = synthesis_result['synthesized_content']
-        
-        # Store all sources for later use in the report
-        if "all_new_sources" not in state:
-            state["all_new_sources"] = []
-        state["all_new_sources"].extend(synthesis_result['all_sources'])
-        
         print(f"   ✅ Completed intelligent synthesis for {topic} ({synthesis_result['expansion_rounds']} expansion rounds)")
+        return topic, synthesis_result
+    
+    # Process topics in parallel
+    all_new_sources = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all topic processing tasks
+        future_to_topic = {
+            executor.submit(process_topic, topic): topic 
+            for topic in state["topics"]
+        }
+        
+        # Collect results as they complete
+        for future in as_completed(future_to_topic):
+            topic = future_to_topic[future]
+            try:
+                topic_name, synthesis_result = future.result()
+                expanded_sections[topic_name] = synthesis_result['synthesized_content']
+                all_new_sources.extend(synthesis_result['all_sources'])
+            except Exception as e:
+                print(f"   ❌ Error processing topic '{topic}': {e}")
+                expanded_sections[topic] = f"Error processing {topic}: {str(e)}"
     
     # Update state
     state["expanded_sections"] = expanded_sections
     state["global_source_mapping"] = global_source_mapping
+    state["all_new_sources"] = all_new_sources
     print(f"✅ Completed intelligent synthesis for {len(expanded_sections)} topics")
     
     return state

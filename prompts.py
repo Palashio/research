@@ -304,9 +304,9 @@ Return the integrated content that seamlessly combines the original and new info
 FOLLOW_UP_QUESTIONS_FOR_TOPIC_PROMPT = """
 You are a research analyst. Analyze this synthesized content about a SPECIFIC TOPIC and identify areas that need more research.
 
-<SPECIFIC TOPIC TO FOCUS ON>
+<Specific topic to focus on>
 {topic}
-</SPECIFIC TOPIC TO FOCUS ON>
+</Specific topic to focus on>
 
 <Content>
 {content}
