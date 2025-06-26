@@ -105,36 +105,29 @@ python tests/evaluator.py report.md --model gpt-4o --output results.json
 
 ```mermaid
 graph TD
-    %% Main Pipeline Nodes
-    A[📋 Extract Topics<br/>Breaks down research question] --> B[❓ Generate Subquestions<br/>Creates specific questions]
-    B --> C[🔄 Follow-up Generator<br/>Analyzes results for new questions]
-    C --> D[🔍 Search Node<br/>Finds relevant sources]
-    D --> E[⚙️ Iteration Controller<br/>Manages research depth]
+    %% Main Pipeline Flow
+    A[Extract Topics] --> B[Generate Subquestions]
+    B --> C[Follow-up Generator]
+    C --> D[Search Node]
+    D --> E[Iteration Controller]
     
     %% Conditional Flow
     E -->|Continue Research| C
-    E -->|Complete| F[🧠 Article Synthesis<br/>with Expansion]
+    E -->|Complete| F[Article Synthesis & Expansion]
     
-    %% Research Agent Subgraph
-    subgraph "🔬 Research Agent"
+    %% Research Agent Internal Flow
+    subgraph "Research Agent (Parallel Processing)"
         direction TB
-        H[🚀 Recursive Expansion<br/>Generates follow-up questions]
-        I[⚡ Parallel Search<br/>Concurrent source discovery]
-        J[🔗 Content Integration<br/>Weaves new information]
-        K[📝 Citation Management<br/>Tracks sources & citations]
-        L[✨ Academic Formatting<br/>Natural narrative flow]
+        G[Topic Processing] --> H[Recursive Expansion]
+        H --> I[Parallel Search]
+        I --> J[Content Integration]
+        J --> K[Source Management]
+        K --> L[Academic Formatting]
     end
     
-    %% Research Agent Flow
-    F --> H
-    H --> I
-    I --> J
-    I --> K
-    J --> L
-    K --> L
-    
     %% Final Report
-    L --> G[📄 Generate Report<br/>Professional markdown output]
+    F --> G
+    L --> M[Generate Report]
     
     %% Styling
     classDef mainNode fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
@@ -143,7 +136,7 @@ graph TD
     classDef reportNode fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
     
     class A,B,C,D mainNode
-    class H,I,J,K,L agentNode
+    class G,H,I,J,K,L agentNode
     class E controlNode
-    class F,G reportNode
+    class F,M reportNode
 ```
